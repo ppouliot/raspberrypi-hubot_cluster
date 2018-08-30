@@ -1,6 +1,5 @@
-FROM armhf/alpine:latest
-# Worked
 #FROM resin/raspberry-pi-alpine:latest
+FROM arm32v6/alpine:latest
 MAINTAINER Peter J. Pouliot <peter@pouliot.net>
 
 RUN adduser -D ircd -s /bin/false ircd
