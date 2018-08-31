@@ -7,6 +7,10 @@ I had some makerbeam and an older Raspberry Pi Cluster with some spare boards.  
 ### IRCD
 * ircd-Hybrid
 
+### IRCD
+* nfsd
+
+
 ### Redis
 
 ### Hubot
