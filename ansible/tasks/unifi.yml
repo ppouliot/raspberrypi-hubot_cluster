@@ -1,0 +1,27 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Unifi Configuration Tasks
+  hosts: unifi
+  any_errors_fatal: true
+  become: yes
+  become_user: root
+  tasks:
+  - stat: 
+      path: /home/admin
+      register: admin_exists
+  - authorized_key:
+      user: root
+      state: present
+      key: "{{ lookup('file', '/etc/ansible/keys/id_rsa.pub') }}"
+  - authorized_key:
+      user: admin
+      state: present
+      key: "{{ lookup('file', '/etc/ansible/keys/id_rsa.pub') }}"
+    when: admin_exists == true
+#  - vyos_facts:
+#        gather_subset: all
+#        provider: ssh_keyfile
+  - vyos_command:
+      commands:
+        - show version
+        - show hardware cpu

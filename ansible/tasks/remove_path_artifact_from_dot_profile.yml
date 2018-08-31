@@ -1,0 +1,15 @@
+#! /usr/bin/env ansible-playbook
+---
+- name: remove artifact from "{{ item }}"/.profile
+  hosts: rpi-mb2
+  sudo: True
+  vars:
+  tasks:
+  - lineinfile: 
+       path: "{{ item }}"
+       line: ' # set PATH so it includes /opt/bin if it exists if [ -d "/opt/bin" ] ; then PATH="/opt/bin:$PATH" export PATH fi'
+       state: absent
+    with_items:
+       - /etc/skel/.profile
+       - /root/.profile
+       - /home/pirate/.profile

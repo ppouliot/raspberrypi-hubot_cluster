@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Set ROS Console
+  hosts: rancheros
+  any_errors_fatal: true
+#  become: yes
+#  become_user: root
+  tasks:
+  - name: Change Rancher Console
+    command: 'ros console switch ubuntu -f'
+#  - name: Start Clusterhat PiZero 4
+#    command: 'clusterhat on p4'
+

@@ -1,0 +1,7 @@
+ansible_ssh_user: core
+become_method: sudo
+become_user: root
+ansible_become_use: root
+ansible_ssh_private_key_file: /etc/ansible/keys/id_rsa
+ansible_python_interpreter: /opt/bin/python
+etcd_secure: False

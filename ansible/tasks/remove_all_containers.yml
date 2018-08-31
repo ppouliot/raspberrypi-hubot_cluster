@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Remove all containers and Images
+  gather_facts: False
+  hosts: rancheros
+  tasks:
+  - script: remove_all_containers.sh  creates=/home/rancher/consoled.txt

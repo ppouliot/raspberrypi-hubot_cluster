@@ -1,0 +1,230 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+# The current version of cloud-init in the Hypriot rpi-64 is 0.7.9
+# When dealing with cloud-init, it is SUPER important to know the version
+# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
+# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: "{{ item }}"
+manage_etc_hosts: true
+
+
+# This expands the root volume to the entire SD Card, similar to what the raspbian images did on first boot.
+# This doesn't seem to be required, its more here for posterity in understanding what is going on
+resize_rootfs: true
+growpart:
+    mode: auto
+    devices: ["/"]
+    ignore_growroot_disabled: false
+
+# You could modify this for your own user information
+users:
+  - name: pirate
+    gecos: "Hypriot Pirate"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video
+    plain_text_passwd: hypriot
+    lock_passwd: false
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+
+# Update our packages on first boot, saves us some time
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+# Install any additional packages you need here
+# I add ntp because.. without it, rpi is useless in keeping track of time.
+packages:
+  - ntp
+  - screen
+  - rsync
+  - unzip
+  - docker-compose
+  - nfs-kernel-server
+  - portmap
+  - nfs-common
+
+# Set the locale of the system
+locale: "en_US.UTF-8"
+
+# Set the timezone
+# Value of 'timezone' must exist in /usr/share/zoneinfo
+timezone: "America/New_York"
+
+# Tell docker to tag this node appropriately
+# Currently we need the experimental?
+write_files:
+#    - path: "/etc/docker/daemon.json"
+#      owner: "root:root"
+#      content: |
+#        {
+#          "labels": [ "os=linux", "arch=arm64" ],
+#          "experimental": true
+#        }
+    - path: "/tmp/install-consul.sh"
+      permissions: "0777"
+      owner: "root:root"
+      content: |
+        #!/bin/bash
+        # https://releases.hashicorp.com/consul/1.0.0/consul_1.0.0_linux_arm.zip?_ga=2.113386767.968256979.1510800959-1296389188.1510800959
+        LOGFILE='/usr/local/.install-consul.log'
+        exec >> $LOGFILE 2>&1
+        CONSUL_VERSION='1.0.0'
+        if [ ! -d /usr/local/bin ];
+        then
+          mkdir -p /usr/local/bin
+        fi
+        cd /usr/local/bin
+        wget -nv -O consul_${CONSUL_VERSION}_linux_arm.zip https://releases.hashicorp.com/consul/$CONSUL_VERSION/consul_${CONSUL_VERSION}_linux_arm.zip?_ga=2.113386767.968256979.1510800959-1296389188.1510800959
+        unzip consul_${CONSUL_VERSION}_linux_arm.zip
+        rm -rf consul_${CONSUL_VERSION}_linux_arm.zip
+        chmod ugo+x  /usr/local/bin/consul
+        /usr/local/bin/consul --version
+
+    - path: "/tmp/install-vault.sh"
+      permissions: "0777"
+      owner: "root:root"
+      content: |
+        #!/bin/bash
+        # https://releases.hashicorp.com/vault/0.9.0/vault_0.9.0_linux_arm.zip?_ga=2.85590673.968256979.1510800959-1296389188.1510800959`
+        LOGFILE='/usr/local/.install-vault.log'
+        exec >> $LOGFILE 2>&1
+        VAULT_VERSION='0.9.0'
+        if [ ! -d /usr/local/bin ];
+        then
+          mkdir -p /usr/local/bin
+        fi
+        cd /usr/local/bin
+        wget -nv -O vault_${VAULT_VERSION}_linux_arm.zip https://releases.hashicorp.com/vault/$VAULT_VERSION/vault_${VAULT_VERSION}_linux_arm.zip?_ga=2.85590673.968256979.1510800959-1296389188.1510800959
+        unzip vault_${VAULT_VERSION}_linux_arm.zip
+        rm -rf vault_${VAULT_VERSION}_linux_arm.zip
+        chmod ugo+x  /usr/local/bin/vault
+        /usr/local/bin/vault --version
+
+    - path: "/tmp/install-flannel.sh"
+      permissions: "0777"
+      owner: "root:root"
+      content: |
+        #!/bin/bash
+        LOGFILE='/usr/local/.install-flannel.log'
+        exec >> $LOGFILE 2>&1
+        FLANNEL_VERSION='0.9.0'
+        if [ ! -d /usr/local/bin ];
+        then
+          mkdir -p /usr/local/bin
+        fi
+        cd /usr/local/bin
+        wget -nv -O flanneld https://github.com/coreos/flannel/releases/download/v${FLANNEL_VERSION}/flanneld-arm
+        chmod ugo+x  /usr/local/flanneld
+        /usr/local/bin/flanneld --version
+
+      # docker-volumes-netshare
+      # https://ender74.github.io/Sharing-Volumes-With-Docker-NFS/
+    - path: "/etc/conf.d/nfs"
+      permissions: '0644'
+      content: |
+        OPTS_RPC_MOUNTD=""
+
+    - path: "/etc/exports"
+      permissions: "0644"
+      content: /srv/ *(rw,async,no_subtree_check,no_root_squash,fsid=0)
+
+    - path: "/srv/README"
+      content: |
+        Provisioned automically over pxe using the following cloud-config url
+        https://github.com/ppouliot/hypriot_deployment
+
+    - path: "/tmp/install-docker-volume-netshare.sh"
+      permissions: "0777"
+      owner: "root:root"
+      content: |
+        #!/bin/bash
+        LOGFILE='/usr/local/.install-docker-volume-netshare.log'
+        exec >> $LOGFILE 2>&1
+        if [ ! -d /usr/local/bin ];
+        then
+          mkdir -p /usr/local/bin
+        fi
+        wget -nv -O /usr/local/bin/docker-volume-netshare https://github.com/ContainX/docker-volume-netshare/releases/download/v0.34/docker-volume-netshare_0.34_linux_arm-bin
+        chmod ugo+x  /usr/local/bin/docker-volume-netshare
+        /usr/local/bin/docker-volume-netshare version
+
+    - path: "/etc/systemd/system/docker-volume-netshare.service"
+      permissions: "0777"
+      owner: "root:root"
+      content: |
+        [Unit]
+        Description=Enable Docker Volume Netshare Plugin for NFS
+        Requires=docker.service
+
+        [Service]
+        ExecStart=/usr/local/bin/docker-volume-netshare nfs
+
+        [Install]
+        WantedBy=default.target
+
+
+# These commands will be ran once on first boot only
+runcmd:
+  # Let's run the scripts above first
+  - [ bash, -ex, /tmp/install-consul.sh ]
+  - [ bash, -ex, /tmp/install-vault.sh ]
+
+# Currently do not work on RPI Model B
+#  - [ bash, -ex, /tmp/install-flannel.sh ]
+#  - [ bash, -ex, /tmp/install-docker-volume-netshare.sh ]
+  
+  # Pickup the hostname changes
+  - [ systemctl, restart, avahi-daemon ]
+  
+  # Start NFS/Docker-Volume-Netshare
+#  - [ systemctl, restart, nfs-kernel-server ]
+#  - [ systemctl, restart, docker-volume-netshare ]
+
+  # Pickup the daemon.json changes
+  - [ systemctl, restart, docker ]
+
+  
+  # Init a swarm, because why not
+  - [docker, swarm, init ]
+
+
+  # Add apt sources for kubernetes
+  - /usr/bin/curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | /usr/bin/apt-key add -
+  - /bin/echo deb http://apt.kubernetes.io/ kubernetes-xenial main > /etc/apt/sources.list.d/kubernetes.list
+  
+  # Run portainer, so we can see our logs and control stuff from a UI
+  - [
+      docker, service, create, 
+      "--detach=false", 
+      "--name", "portainer", 
+      "--publish", "9000:9000", 
+      "--mount", "type=volume,src=portainer_data,dst=/data", 
+      "--mount", "type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock", 
+      "portainer/portainer", "-H", "unix:///var/run/docker.sock", "--no-auth"
+    ]
+
+  # Create a specific directory to store all the data, this way you could mount an external drive later (coming soon!)
+#  - [mkdir, "-p", "/var/cloud/data" ]
+
+  # This gives the nextcloud permissions to write to this directory since it runs as www-data
+#  - [setfacl, "-m", "u:www-data:rwx", "/var/cloud/data" ]
+
+  # Create the nextcloud instance configuring it on startup - you should change the user/password below to something less obvious or use the config UI
+#  - [
+#      docker, service, create, 
+#      "--detach=false", 
+#      "--name", "nextcloud", 
+#      "--publish", "80:80", 
+#      "--mount", "type=volume,src=nextcloud,dst=/var/www/html", 
+#      "--mount", "type=bind,src=//var/cloud/data,dst=/var/www/html/data", 
+#      "--env", "SQLITE_DATABASE=nextcloud", 
+#      "--env", "NEXTCLOUD_ADMIN_USER=pirate", 
+#      "--env", "NEXTCLOUD_ADMIN_PASSWORD=hypriot", 
+#      "nextcloud:latest" 
+#    ]

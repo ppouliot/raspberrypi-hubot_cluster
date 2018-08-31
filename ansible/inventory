@@ -1,0 +1,39 @@
+localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python"
+
+
+# ansible_connection=ssh 
+# ansible_private_key_File=/root/id_rsa
+[all]
+localhost
+bp0.pouliot.net
+bp1.pouliot.net
+bp2.pouliot.net
+bp3.pouliot.net
+bp4.pouliot.net
+
+[short]
+bp1
+bp2
+bp3
+bp4
+bp5
+bp6
+bp7
+
+[by-ip]
+10.1.1.171
+10.1.1.172
+10.1.1.173
+10.1.1.174
+10.1.1.181
+10.1.1.182
+10.1.1.194
+
+[long]
+bp1.pouliot.net
+bp2.pouliot.net
+bp3.pouliot.net
+bp4.pouliot.net
+bp5.pouliot.net
+bp6.pouliot.net
+bp7.pouliot.net

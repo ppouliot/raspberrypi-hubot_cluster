@@ -1,0 +1,95 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Add necessary ssh public /etc/ansible/keys to default and required users.
+  hosts: hypriot
+  any_errors_fatal: true
+  tasks:
+
+  - name: Check for existance of RancherOS Default User!
+    stat: 
+      path: /home/rancher
+    register: user_rancheros
+
+  - name: Adding public /etc/ansible/keys to RancherOS Default User!
+    authorized_key:
+      user: rancher
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - '/etc/ansible/keys/id_rsa.pub'
+      - '/root/.ssh/id_ed25519.pub'
+      - '/var/lib/jenkins/.ssh/id_rsa.pub'
+
+  - name: Checking for existance of a CoreOS Default User!
+    stat: 
+      path: /home/core
+    register: user_coreos
+
+  - name: Adding public /etc/ansible/keys to CoreOS Default User!
+    authorized_key:
+      user: core 
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - '/etc/ansible/keys/id_rsa.pub'
+      - '/root/.ssh/id_ed25519.pub'
+      - '/var/lib/jenkins/.ssh/id_rsa.pub'
+  - name: Checking for existance of Hypriot Pirate!
+    stat: 
+      path: /home/pirate
+    register: user_hypriot
+
+  - name: Adding public /etc/ansible/keys to Hyperiot Pirate Default User!
+    authorized_key:
+      user: pirate
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - '/etc/ansible/keys/id_rsa.pub'
+      - '/root/.ssh/id_ed25519.pub'
+      - '/var/lib/jenkins/.ssh/id_rsa.pub'
+
+  - name: Checking for existance of an Ubiqiti Admin User!
+    stat: 
+      path: /home/admin
+    register: user_admin
+
+  - name: Adding public /etc/ansible/keys to Ubiqiti Admin User!
+    authorized_key:
+      user: admin
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - '/etc/ansible/keys/id_rsa.pub'
+      - '/root/.ssh/id_ed25519.pub'
+      - '/var/lib/jenkins/.ssh/id_rsa.pub'
+#      - "{{ lookup('file', '/etc/ansible/keys/id_rsa.pub') }}"
+#      - "{{ lookup('file', '/root/.ssh/id_ed25519.pub') }}"
+    when: user_admin == true
+
+  - name: Checking for existance of an Ubiquiti UBNT Default User!
+    stat: 
+      path: /home/ubnt
+    register: user_ubnt
+  - name: Adding public /etc/ansible/keys to Ubiquity UBNT Default User!
+    authorized_key:
+      user: ubnt
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - '/etc/ansible/keys/id_rsa.pub'
+      - '/root/.ssh/id_ed25519.pub'
+      - '/var/lib/jenkins/.ssh/id_rsa.pub'
+#      - "{{ lookup('file', '/etc/ansible/keys/id_rsa.pub') }}"
+#      - "{{ lookup('file', '/root/.ssh/id_ed25519.pub') }}"
+
+  #!!!! Root User
+  - name: Adding public /etc/ansible/keys to Root User!
+    authorized_key:
+      user: root
+      state: present
+      key: '{{ item }}'
+    with_file:
+      - '/etc/ansible/keys/id_rsa.pub'
+      - '/root/.ssh/id_ed25519.pub'
+      - '/var/lib/jenkins/.ssh/id_rsa.pub'
