@@ -1,4 +1,4 @@
-FROM resin/raspberry-pi-alpine:latest
+FROM arm32v6/node:latest
 MAINTAINER Peter J. Pouliot <peter@pouliot.net>
 
 ENV NODEJS_VERSION 9.6.1
