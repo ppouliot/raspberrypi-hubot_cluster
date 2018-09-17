@@ -1,6 +1,18 @@
 #!/usr/bin/env ansible-playbook
 ---
 - hosts: bp1
+  tasks:
+  - name: Ensure nfs directories
+    file:
+      path: "{{item}}"
+      state: directory
+      mode: 0775
+      owner: root
+      group: root
+    with_items:
+      - /nfs
+      - /nfs/redis
+      - /nfs/hubot
   roles:
     - geerlingguy.nfs
 

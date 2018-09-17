@@ -1,15 +1,6 @@
 FROM arm32v6/node:latest
 MAINTAINER Peter J. Pouliot <peter@pouliot.net>
 
-ENV NODEJS_VERSION 9.6.1
-
-#SHELL ["powershell", "-command"]
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-
-RUN \
-    # Install NodeJS
-
-# Install Hubot and related npms
 RUN \
     /usr/bin/npm install -g yo generator-hubot \
     md /hubot \

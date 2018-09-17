@@ -1,0 +1,11 @@
+version: '3.2'
+services:
+
+  # Hubot Redis Brain
+  redis:
+    image: arm32v6/redis:latest
+    restart: always
+    ports:
+      - "6379"
+    volumes:
+            - "/nfs/redis":"/data"
