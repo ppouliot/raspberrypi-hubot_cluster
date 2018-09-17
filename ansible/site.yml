@@ -1,4 +1,7 @@
 #!/usr/bin/env ansible-playbook
 ---
 - import_playbook: tasks/add_ssh_keys.yml
-- import_playbook: tasks/upgrade_packages.yml
+- import_playbook: tasks/ntp.yml
+- import_playbook: tasks/packages.yml
+- import_playbook: tasks/nfs.yml
+# - import_playbook: tasks/upgrade_packages.yml

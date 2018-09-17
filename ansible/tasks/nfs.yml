@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: bp1
+  roles:
+    - geerlingguy.nfs
+
+- hosts: nfs-clients
+  roles:
+  - role: openmicroscopy.nfs-mount
+    nfs_share_mounts:
+      - path: /nfs
+        location: bp1.pouliot.net:/nfs
+        passno: 0

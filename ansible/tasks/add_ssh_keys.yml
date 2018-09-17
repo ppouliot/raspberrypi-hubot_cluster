@@ -1,7 +1,7 @@
 #!/usr/bin/env ansible-playbook
 ---
 - name: Add necessary ssh public /etc/ansible/keys to default and required users.
-  hosts: hypriot
+  hosts: model-b
   any_errors_fatal: true
   tasks:
 
