@@ -10,9 +10,18 @@
       owner: root
       group: root
     with_items:
-      - /nfs
-      - /nfs/redis
+      - /nfs/pihole
+      - /nfs/pihole/etc
+      - /nfs/pihole/dnsmasq.d
+      - /nfs/network_devices
+      - /nfs/ircd-hybrid
       - /nfs/hubot
+      - /nfs/redis
+      - /nfs/src
+      - /nfs/src/{{ ansible_hostname}}
+      - /nfs/log
+      - /nfs/log/{{ ansible_hostname}}
+      - /nfs
   roles:
     - geerlingguy.nfs
 
@@ -23,3 +32,14 @@
       - path: /nfs
         location: bp1.pouliot.net:/nfs
         passno: 0
+  tasks:
+  - name: Ensure directories
+    file:
+      path: "{{item}}"
+      state: directory
+      mode: 0775
+      owner: root
+      group: root
+    with_items:
+      - /nfs/src/{{ ansible_hostname}}
+      - /nfs/log/{{ ansible_hostname}}
