@@ -1,0 +1,12 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: bp2
+  tasks:
+  - name: Create Docker Image for GHE Helper on BP2 for ARM32V6
+    docker_image:
+      path: /nfs/src/ghe-helper
+      name: ppouliot/ghe-helper:arm32v6
+      dockerfile: Dockerfile.arm32v6
+#     buildargs:
+#       log_volume: /var/log/myapp
+#       listen_port: 8080

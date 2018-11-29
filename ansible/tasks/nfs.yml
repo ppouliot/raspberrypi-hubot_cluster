@@ -2,7 +2,7 @@
 ---
 - hosts: bp1
   tasks:
-  - name: Ensure nfs directories
+  - name: Ensure nfs directories and files
     file:
       path: "{{item}}"
       state: directory
@@ -10,6 +10,8 @@
       owner: root
       group: root
     with_items:
+      - /nfs
+      - /nfs/bin
       - /nfs/pihole
       - /nfs/pihole/etc
       - /nfs/pihole/dnsmasq.d
@@ -18,10 +20,16 @@
       - /nfs/hubot
       - /nfs/redis
       - /nfs/src
-      - /nfs/src/{{ ansible_hostname}}
+      - /nfs/src/{{ ansible_hostname }}
       - /nfs/log
-      - /nfs/log/{{ ansible_hostname}}
-      - /nfs
+      - /nfs/log/{{ ansible_default_ipv4.address }}
+  - name: Ensure Pie Hole Service Script
+    template:
+      src: ../templates/pihole_docker_service.sh.j2
+      dest: "/nfs/pihole/service.sh"
+      mode: 0775
+      owner: root
+      group: root
   roles:
     - geerlingguy.nfs
 
@@ -41,5 +49,5 @@
       owner: root
       group: root
     with_items:
-      - /nfs/src/{{ ansible_hostname}}
-      - /nfs/log/{{ ansible_hostname}}
+      - /nfs/src/{{ ansible_hostname }}
+      - /nfs/log/{{ ansible_default_ipv4.address }}

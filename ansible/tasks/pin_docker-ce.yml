@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Pin Docker-CE to version 18.06.1-ce due to upstream problems
+  gather_facts: False
+  hosts: bp2
+  tasks:
+  - script: ../files/pin_docker-ce.sh  creates=/root/consoled.txt

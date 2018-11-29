@@ -1,0 +1,11 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: bp1
+  tasks:
+  - name: Ensure Git Repo raspberrypi-hubot_cluster
+    git:
+      repo: 'https://github.com/ppouliot/raspberrypi-hubot_cluster'
+      dest: /nfs/src/hubot_cluster
+    git:
+      repo: 'https://github.com/ppouliot/dockerfile-ghe-helper'
+      dest: /nfs/src/ghe-helper
