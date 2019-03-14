@@ -1,7 +1,7 @@
 #!/usr/bin/env ansible-playbook
 ---
 - name: update apt packages
-  hosts: hypriot
+  hosts: model-b
   any_errors_fatal: true
   tasks:
   - apt:

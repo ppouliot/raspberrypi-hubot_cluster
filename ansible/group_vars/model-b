@@ -1,0 +1,12 @@
+#ansible_connection: ssh 
+#ansible_private_key_file: /etc/ansible/keys/id_rsa
+ansible_ssh_user: root
+#ansible_ssh_user: pirate 
+#ansible_ssh_pass: hypriot
+#become_method: sudo
+#become_user: root
+#ansible_become_use: root
+consul_platform: linux_arm
+#consul_agent_pki_dir: '~/pki-dir'
+#consul_agent_secure: False
+ansible_ssh_private_key_file: /etc/ansible/keys/id_rsa

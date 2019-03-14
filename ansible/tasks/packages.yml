@@ -1,10 +1,11 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: update apt packages
+- name: Update Apt Packages
   hosts: model-b
   any_errors_fatal: true
   tasks:
-  - apt:
+  - name: Update package cache
+    apt:
         update_cache: yes
         upgrade: yes
   - name: Upgrade all packages to the latest version

@@ -2,7 +2,7 @@
 ---
 - name: Add necessary ssh public /etc/ansible/keys to default and required users.
   hosts: model-b
-  any_errors_fatal: true
+  #  any_errors_fatal: true
   tasks:
 
   - name: Adding public /etc/ansible/keys to Hyperiot Pirate Default User!

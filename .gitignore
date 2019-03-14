@@ -81,6 +81,6 @@ Blog
 About
 
 #Ansible
-keys/
-keys/*
-
+ansible/keys/*
+ansible/keys/
+ansible/roles/*

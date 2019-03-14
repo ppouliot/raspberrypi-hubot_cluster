@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: bootstrap docker on debian/ubuntu
+- name: Force Public Keys onto host
   gather_facts: False
   hosts: hypriot-pirate
   tasks:
